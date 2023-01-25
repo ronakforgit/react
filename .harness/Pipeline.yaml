@@ -463,7 +463,7 @@ pipeline:
                       spec:
                         connectorRef: ronakgcpbucket
                         bucket: migration-artifact-comman
-                        key: "buildcache<+strategy.iteration> "
+                        key: buildcache-temp
                         sourcePaths:
                           - build
                         archiveFormat: Tar

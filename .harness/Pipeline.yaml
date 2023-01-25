@@ -121,6 +121,8 @@ pipeline:
                       failureStrategies: []
                       strategy:
                         parallelism: 5
+              sharedPaths:
+                - /home/ubuntu/
         - stage:
             name: Setup and yarn lint
             identifier: yarn_lint
@@ -226,6 +228,8 @@ pipeline:
                           ./scripts/circleci/check_license.sh
                           ./scripts/circleci/check_modules.sh
                           ./scripts/circleci/test_print_warnings.sh
+              sharedPaths:
+                - /home/ubuntu/
         - stage:
             name: Setup and yarn test
             identifier: build444
@@ -336,6 +340,8 @@ pipeline:
                       strategy:
                         parallelism: 20
                         maxConcurrency: 20
+              sharedPaths:
+                - /home/ubuntu/
             strategy:
               repeat:
                 items:
@@ -458,3 +464,5 @@ pipeline:
                       strategy:
                         parallelism: 40
                         maxConcurrency: 40
+              sharedPaths:
+                - /home/ubuntu/

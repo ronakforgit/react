@@ -456,6 +456,17 @@ pipeline:
                           CIRCLE_NODE_TOTAL: <+strategy.iterations>
                           TZ: /usr/share/zoneinfo/America/Los_Angeles
                       failureStrategies: []
+                  - step:
+                      type: SaveCacheGCS
+                      name: Save Cache to GCS_3
+                      identifier: SaveCachetoGCS_3
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: "buildcache<+strategy.iteration> "
+                        sourcePaths:
+                          - build
+                        archiveFormat: Tar
               sharedPaths:
                 - /home/ubuntu/
             strategy:

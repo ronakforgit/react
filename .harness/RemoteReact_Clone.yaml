@@ -31,110 +31,62 @@ pipeline:
                       name: sg1
                       identifier: sg1
                       steps:
-                        - parallel:
-                            - step:
-                                identifier: restore_node_modules
-                                type: RestoreCacheGCS
-                                name: restore_node_modules
-                                spec:
-                                  connectorRef: ronakgcpbucket
-                                  bucket: migration-artifact-comman
-                                  key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                                  archiveFormat: Tar
-                                when:
-                                  stageStatus: Success
-                                failureStrategies: []
-                            - step:
-                                identifier: restore_yarn_cache_for_fixtures_dom
-                                type: RestoreCacheGCS
-                                name: restore yarn cache for fixtures dom
-                                spec:
-                                  connectorRef: ronakgcpbucket
-                                  bucket: migration-artifact-comman
-                                  key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                                  archiveFormat: Tar
-                                when:
-                                  stageStatus: Success
-                                failureStrategies: []
+                        - step:
+                            identifier: restore_node_modules
+                            type: RestoreCacheGCS
+                            name: restore_node_modules
+                            spec:
+                              connectorRef: ronakgcpbucket
+                              bucket: migration-artifact-comman
+                              key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                              archiveFormat: Tar
+                            when:
+                              stageStatus: Success
+                            failureStrategies: []
                         - step:
                             identifier: Install_depdendecy
                             type: Run
                             name: Install depdendecy
                             spec:
                               shell: Bash
-                              command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
-                        - parallel:
-                            - step:
-                                identifier: Save_yarn_cache_for_fixtures_dom
-                                type: SaveCacheGCS
-                                name: Save yarn cache for fixtures dom
-                                spec:
-                                  connectorRef: ronakgcpbucket
-                                  bucket: migration-artifact-comman
-                                  key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                                  sourcePaths:
-                                    - /home/ubuntu/.cache/yarn
-                                  archiveFormat: Tar
-                            - step:
-                                identifier: Save_node_modules_cache
-                                type: SaveCacheGCS
-                                name: Save node_modules cache
-                                spec:
-                                  connectorRef: ronakgcpbucket
-                                  bucket: migration-artifact-comman
-                                  key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                                  sourcePaths:
-                                    - node_modules
-                                    - packages/eslint-plugin-react-hooks/node_modules
-                                    - packages/react-art/node_modules
-                                    - packages/react-client/node_modules
-                                    - packages/react-devtools-core/node_modules
-                                    - packages/react-devtools-extensions/node_modules
-                                    - packages/react-devtools-inline/node_modules
-                                    - packages/react-devtools-shared/node_modules
-                                    - packages/react-devtools-shell/node_modules
-                                    - packages/react-devtools-timeline/node_modules
-                                    - packages/react-devtools/node_modules
-                                    - packages/react-dom/node_modules
-                                    - packages/react-interactions/node_modules
-                                    - packages/react-native-renderer/node_modules
-                                    - packages/react-reconciler/node_modules
-                                    - packages/react-server-dom-relay/node_modules
-                                    - packages/react-server-dom-webpack/node_modules
-                                    - packages/react-server-native-relay/node_modules
-                                    - packages/react-server/node_modules
-                                    - packages/react-test-renderer/node_modules
-                                    - packages/react/node_modules
-                                    - packages/scheduler/node_modules
-                                  archiveFormat: Tar
+                              command: echo "hello"
                         - step:
-                            identifier: Yarn
-                            type: Run
-                            name: yarn build-combined
+                            identifier: Save_node_modules_cache
+                            type: SaveCacheGCS
+                            name: Save node_modules cache
                             spec:
-                              shell: Sh
-                              command: yarn build-combined
-                              envVariables:
-                                CIRCLE_NODE_INDEX: <+strategy.iteration>
-                                CIRCLE_NODE_TOTAL: <+strategy.iterations>
-                                TZ: /usr/share/zoneinfo/America/Los_Angeles
-                            failureStrategies: []
+                              connectorRef: ronakgcpbucket
+                              bucket: migration-artifact-comman
+                              key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                              sourcePaths:
+                                - node_modules
+                                - packages/eslint-plugin-react-hooks/node_modules
+                                - packages/react-art/node_modules
+                                - packages/react-client/node_modules
+                                - packages/react-devtools-core/node_modules
+                                - packages/react-devtools-extensions/node_modules
+                                - packages/react-devtools-inline/node_modules
+                                - packages/react-devtools-shared/node_modules
+                                - packages/react-devtools-shell/node_modules
+                                - packages/react-devtools-timeline/node_modules
+                                - packages/react-devtools/node_modules
+                                - packages/react-dom/node_modules
+                                - packages/react-interactions/node_modules
+                                - packages/react-native-renderer/node_modules
+                                - packages/react-reconciler/node_modules
+                                - packages/react-server-dom-relay/node_modules
+                                - packages/react-server-dom-webpack/node_modules
+                                - packages/react-server-native-relay/node_modules
+                                - packages/react-server/node_modules
+                                - packages/react-test-renderer/node_modules
+                                - packages/react/node_modules
+                                - packages/scheduler/node_modules
+                              archiveFormat: Tar
                       failureStrategies: []
                       strategy:
                         parallelism: 40
                         maxConcurrency: 40
                       spec: {}
-                  - step:
-                      type: SaveCacheGCS
-                      name: persist data to next stage
-                      identifier: SaveCachetoGCS_3
-                      spec:
-                        connectorRef: ronakgcpbucket
-                        bucket: migration-artifact-comman
-                        key: buildcache-temp
-                        sourcePaths:
-                          - build/
-                        archiveFormat: Tar
               sharedPaths:
                 - /home/ubuntu/
         - stage:

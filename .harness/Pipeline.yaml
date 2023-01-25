@@ -38,7 +38,6 @@ pipeline:
                             archiveFormat: Tar
                           when:
                             stageStatus: Success
-                            condition: "false"
                           failureStrategies: []
                       - step:
                           identifier: restore_yarn_cache_for_fixtures_dom
@@ -51,7 +50,6 @@ pipeline:
                             archiveFormat: Tar
                           when:
                             stageStatus: Success
-                            condition: "false"
                           failureStrategies: []
                   - step:
                       identifier: Install_depdendecy

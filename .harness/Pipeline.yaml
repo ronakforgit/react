@@ -1,6 +1,6 @@
 pipeline:
-  name: Remote-React
   identifier: RemoteReact
+  name: Remote-React
   projectIdentifier: NgLabs
   orgIdentifier: default
   tags: {}
@@ -9,13 +9,16 @@ pipeline:
       codebase:
         connectorRef: account.gitforronak
         repoName: ronakforgit/react
-        build: <+input>
+        build:
+          type: branch
+          spec:
+            branch: main
   stages:
     - parallel:
         - stage:
-            name: Setup and yarn flow
             identifier: build
             type: CI
+            name: Setup and yarn flow
             spec:
               cloneCodebase: true
               platform:
@@ -54,11 +57,10 @@ pipeline:
                   - step:
                       identifier: Install_depdendecy
                       type: Run
-                      name: "Install depdendecy "
+                      name: Install depdendecy
                       spec:
                         shell: Bash
-                        command: |
-                          yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
+                        command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
                   - parallel:
                       - step:
                           identifier: Save_yarn_cache_for_fixtures_dom
@@ -104,9 +106,9 @@ pipeline:
                               - packages/scheduler/node_modules
                             archiveFormat: Tar
                   - step:
+                      identifier: yarn_flow
                       type: Run
                       name: yarn flow
-                      identifier: yarn_flow
                       spec:
                         shell: Sh
                         command: node ./scripts/tasks/flow-ci
@@ -122,9 +124,9 @@ pipeline:
               sharedPaths:
                 - /home/ubuntu/
         - stage:
-            name: Setup and yarn lint
             identifier: yarn_lint
             type: CI
+            name: Setup and yarn lint
             spec:
               cloneCodebase: true
               platform:
@@ -163,11 +165,10 @@ pipeline:
                   - step:
                       identifier: Install_depdendecy
                       type: Run
-                      name: "Install depdendecy "
+                      name: Install depdendecy
                       spec:
                         shell: Bash
-                        command: |
-                          yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
+                        command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
                   - parallel:
                       - step:
                           identifier: Save_yarn_cache_for_fixtures_dom
@@ -213,9 +214,9 @@ pipeline:
                               - packages/scheduler/node_modules
                             archiveFormat: Tar
                   - step:
+                      identifier: yarn__lint
                       type: Run
                       name: yarn_ lint
-                      identifier: yarn__lint
                       spec:
                         shell: Sh
                         command: |-
@@ -227,9 +228,9 @@ pipeline:
               sharedPaths:
                 - /home/ubuntu/
         - stage:
-            name: Setup and yarn test
             identifier: build444
             type: CI
+            name: Setup and yarn test
             spec:
               cloneCodebase: true
               platform:
@@ -268,11 +269,10 @@ pipeline:
                   - step:
                       identifier: Install_depdendecy
                       type: Run
-                      name: "Install depdendecy "
+                      name: Install depdendecy
                       spec:
                         shell: Bash
-                        command: |
-                          yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
+                        command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
                   - parallel:
                       - step:
                           identifier: Save_yarn_cache_for_fixtures_dom
@@ -318,9 +318,9 @@ pipeline:
                               - packages/scheduler/node_modules
                             archiveFormat: Tar
                   - step:
+                      identifier: yarn_flow
                       type: Run
                       name: yarn test
-                      identifier: yarn_flow
                       spec:
                         shell: Sh
                         command: yarn test <+repeat.item> --ci
@@ -355,9 +355,9 @@ pipeline:
                   - "-r=experimental --env=development --persistent"
                 maxConcurrency: 15
         - stage:
-            name: Setup and yarn build combined
             identifier: build44
             type: CI
+            name: Setup and yarn build combined
             spec:
               cloneCodebase: true
               platform:
@@ -368,104 +368,96 @@ pipeline:
                 spec: {}
               execution:
                 steps:
-                  - stepGroup:
-                      name: setup and build combined
-                      identifier: setup_and_build_combined
-                      steps:
-                        - step:
-                            identifier: restore_node_modules
-                            type: RestoreCacheGCS
-                            name: restore_node_modules
-                            spec:
-                              connectorRef: ronakgcpbucket
-                              bucket: migration-artifact-comman
-                              key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                              archiveFormat: Tar
-                            when:
-                              stageStatus: Success
-                              condition: "false"
-                            failureStrategies: []
-                        - step:
-                            identifier: restore_yarn_cache_for_fixtures_dom
-                            type: RestoreCacheGCS
-                            name: restore yarn cache for fixtures dom
-                            spec:
-                              connectorRef: ronakgcpbucket
-                              bucket: migration-artifact-comman
-                              key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                              archiveFormat: Tar
-                            when:
-                              stageStatus: Success
-                              condition: "false"
-                            failureStrategies: []
-                        - step:
-                            identifier: Install_depdendecy
-                            type: Run
-                            name: "Install depdendecy "
-                            spec:
-                              shell: Bash
-                              command: |
-                                yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
-                        - parallel:
-                            - step:
-                                identifier: Save_yarn_cache_for_fixtures_dom
-                                type: SaveCacheGCS
-                                name: Save yarn cache for fixtures dom
-                                spec:
-                                  connectorRef: ronakgcpbucket
-                                  bucket: migration-artifact-comman
-                                  key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                                  sourcePaths:
-                                    - /home/ubuntu/.cache/yarn
-                                  archiveFormat: Tar
-                            - step:
-                                identifier: Save_node_modules_cache
-                                type: SaveCacheGCS
-                                name: Save node_modules cache
-                                spec:
-                                  connectorRef: ronakgcpbucket
-                                  bucket: migration-artifact-comman
-                                  key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                                  sourcePaths:
-                                    - node_modules
-                                    - packages/eslint-plugin-react-hooks/node_modules
-                                    - packages/react-art/node_modules
-                                    - packages/react-client/node_modules
-                                    - packages/react-devtools-core/node_modules
-                                    - packages/react-devtools-extensions/node_modules
-                                    - packages/react-devtools-inline/node_modules
-                                    - packages/react-devtools-shared/node_modules
-                                    - packages/react-devtools-shell/node_modules
-                                    - packages/react-devtools-timeline/node_modules
-                                    - packages/react-devtools/node_modules
-                                    - packages/react-dom/node_modules
-                                    - packages/react-interactions/node_modules
-                                    - packages/react-native-renderer/node_modules
-                                    - packages/react-reconciler/node_modules
-                                    - packages/react-server-dom-relay/node_modules
-                                    - packages/react-server-dom-webpack/node_modules
-                                    - packages/react-server-native-relay/node_modules
-                                    - packages/react-server/node_modules
-                                    - packages/react-test-renderer/node_modules
-                                    - packages/react/node_modules
-                                    - packages/scheduler/node_modules
-                                  archiveFormat: Tar
-                        - step:
-                            type: Run
-                            name: yarn build-combined
-                            identifier: Yarn
-                            spec:
-                              shell: Sh
-                              command: yarn build-combined
-                              envVariables:
-                                CIRCLE_NODE_INDEX: <+strategy.iteration>
-                                CIRCLE_NODE_TOTAL: <+strategy.iterations>
-                                TZ: /usr/share/zoneinfo/America/Los_Angeles
-                            failureStrategies: []
+                  - parallel:
+                      - step:
+                          identifier: restore_node_modules
+                          type: RestoreCacheGCS
+                          name: restore_node_modules
+                          spec:
+                            connectorRef: ronakgcpbucket
+                            bucket: migration-artifact-comman
+                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                            archiveFormat: Tar
+                          when:
+                            stageStatus: Success
+                          failureStrategies: []
+                      - step:
+                          identifier: restore_yarn_cache_for_fixtures_dom
+                          type: RestoreCacheGCS
+                          name: restore yarn cache for fixtures dom
+                          spec:
+                            connectorRef: ronakgcpbucket
+                            bucket: migration-artifact-comman
+                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
+                            archiveFormat: Tar
+                          when:
+                            stageStatus: Success
+                          failureStrategies: []
+                  - step:
+                      identifier: Install_depdendecy
+                      type: Run
+                      name: Install depdendecy
+                      spec:
+                        shell: Bash
+                        command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
+                  - parallel:
+                      - step:
+                          identifier: Save_yarn_cache_for_fixtures_dom
+                          type: SaveCacheGCS
+                          name: Save yarn cache for fixtures dom
+                          spec:
+                            connectorRef: ronakgcpbucket
+                            bucket: migration-artifact-comman
+                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
+                            sourcePaths:
+                              - /home/ubuntu/.cache/yarn
+                            archiveFormat: Tar
+                      - step:
+                          identifier: Save_node_modules_cache
+                          type: SaveCacheGCS
+                          name: Save node_modules cache
+                          spec:
+                            connectorRef: ronakgcpbucket
+                            bucket: migration-artifact-comman
+                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                            sourcePaths:
+                              - node_modules
+                              - packages/eslint-plugin-react-hooks/node_modules
+                              - packages/react-art/node_modules
+                              - packages/react-client/node_modules
+                              - packages/react-devtools-core/node_modules
+                              - packages/react-devtools-extensions/node_modules
+                              - packages/react-devtools-inline/node_modules
+                              - packages/react-devtools-shared/node_modules
+                              - packages/react-devtools-shell/node_modules
+                              - packages/react-devtools-timeline/node_modules
+                              - packages/react-devtools/node_modules
+                              - packages/react-dom/node_modules
+                              - packages/react-interactions/node_modules
+                              - packages/react-native-renderer/node_modules
+                              - packages/react-reconciler/node_modules
+                              - packages/react-server-dom-relay/node_modules
+                              - packages/react-server-dom-webpack/node_modules
+                              - packages/react-server-native-relay/node_modules
+                              - packages/react-server/node_modules
+                              - packages/react-test-renderer/node_modules
+                              - packages/react/node_modules
+                              - packages/scheduler/node_modules
+                            archiveFormat: Tar
+                  - step:
+                      identifier: Yarn
+                      type: Run
+                      name: yarn build-combined
+                      spec:
+                        shell: Sh
+                        command: yarn build-combined
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
                       failureStrategies: []
-                      strategy:
-                        parallelism: 40
-                        maxConcurrency: 40
-                      spec: {}
               sharedPaths:
                 - /home/ubuntu/
+            strategy:
+              parallelism: 40
+              maxConcurrency: 40

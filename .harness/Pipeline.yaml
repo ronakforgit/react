@@ -457,8 +457,8 @@ pipeline:
                           CIRCLE_NODE_TOTAL: <+strategy.iterations>
                           TZ: /usr/share/zoneinfo/America/Los_Angeles
                       failureStrategies: []
-                      strategy:
-                        parallelism: 40
-                        maxConcurrency: 40
               sharedPaths:
                 - /home/ubuntu/
+            strategy:
+              parallelism: 40
+              maxConcurrency: 40

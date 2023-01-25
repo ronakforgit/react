@@ -119,10 +119,10 @@ pipeline:
                       when:
                         stageStatus: Success
                       failureStrategies: []
-                      strategy:
-                        parallelism: 5
               sharedPaths:
                 - /home/ubuntu/
+            strategy:
+              parallelism: 5
         - stage:
             identifier: yarn_lint
             type: CI

@@ -386,7 +386,6 @@ pipeline:
                             archiveFormat: Tar
                           when:
                             stageStatus: Success
-                            condition: "false"
                           failureStrategies: []
                       - step:
                           identifier: restore_yarn_cache_for_fixtures_dom
@@ -399,7 +398,6 @@ pipeline:
                             archiveFormat: Tar
                           when:
                             stageStatus: Success
-                            condition: "false"
                           failureStrategies: []
                   - step:
                       identifier: Install_depdendecy
@@ -460,6 +458,10 @@ pipeline:
                       spec:
                         shell: Sh
                         command: yarn build-combined
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
                       failureStrategies: []
                       strategy:
                         parallelism: 40

@@ -629,12 +629,9 @@ pipeline:
                       spec:
                         connectorRef: ronakgcpbucket
                         bucket: migration-artifact-comman
-                        key: "buildcache<+strategy.iteration> "
+                        key: buildcache-temp
                         archiveFormat: Tar
                       failureStrategies: []
-                      strategy:
-                        parallelism: 40
-                        maxConcurrency: 1
               - step:
                   identifier: Install_depdendecy
                   type: Run

@@ -458,7 +458,7 @@ pipeline:
                       failureStrategies: []
                   - step:
                       type: SaveCacheGCS
-                      name: Save Cache to GCS_3
+                      name: persist data to next stage
                       identifier: SaveCachetoGCS_3
                       spec:
                         connectorRef: ronakgcpbucket
@@ -622,6 +622,19 @@ pipeline:
                       when:
                         stageStatus: Success
                       failureStrategies: []
+                  - step:
+                      type: RestoreCacheGCS
+                      name: restore Build Data
+                      identifier: restore_Build_Data
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: "buildcache<+strategy.iteration> "
+                        archiveFormat: Tar
+                      failureStrategies: []
+                      strategy:
+                        parallelism: 40
+                        maxConcurrency: 1
               - step:
                   identifier: Install_depdendecy
                   type: Run

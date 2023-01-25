@@ -465,7 +465,7 @@ pipeline:
                         bucket: migration-artifact-comman
                         key: buildcache-temp
                         sourcePaths:
-                          - build
+                          - build/
                         archiveFormat: Tar
               sharedPaths:
                 - /home/ubuntu/

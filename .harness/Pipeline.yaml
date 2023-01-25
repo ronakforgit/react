@@ -668,7 +668,7 @@ pipeline:
                   name: yarn_test_build
                   spec:
                     shell: Sh
-                    command: yarn test --build <+repeat.item>--ci
+                    command: yarn test --build <+repeat.item> --ci
                     envVariables:
                       CIRCLE_NODE_INDEX: <+strategy.iteration>
                       CIRCLE_NODE_TOTAL: <+strategy.iterations>

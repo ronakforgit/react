@@ -84,8 +84,8 @@ pipeline:
                               archiveFormat: Tar
                       failureStrategies: []
                       strategy:
-                        parallelism: 40
-                        maxConcurrency: 40
+                        parallelism: 4
+                        maxConcurrency: 4
                       spec: {}
               sharedPaths:
                 - /home/ubuntu/
@@ -205,7 +205,7 @@ pipeline:
               sharedPaths:
                 - /home/ubuntu/
             strategy:
-              parallelism: 40
-              maxConcurrency: 40
+              parallelism: 4
+              maxConcurrency: 4
   identifier: RemoteReact_Clone
   name: "step group "

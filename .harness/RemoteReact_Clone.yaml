@@ -119,6 +119,11 @@ pipeline:
                                 CIRCLE_NODE_TOTAL: <+strategy.iterations>
                                 TZ: /usr/share/zoneinfo/America/Los_Angeles
                             failureStrategies: []
+                      failureStrategies: []
+                      strategy:
+                        parallelism: 40
+                        maxConcurrency: 40
+                      spec: {}
                   - step:
                       type: SaveCacheGCS
                       name: persist data to next stage
@@ -132,9 +137,6 @@ pipeline:
                         archiveFormat: Tar
               sharedPaths:
                 - /home/ubuntu/
-            strategy:
-              parallelism: 40
-              maxConcurrency: 40
         - stage:
             identifier: build44
             type: CI

@@ -72,7 +72,7 @@ pipeline:
                         archiveFormat: Tar
               sharedPaths:
                 - /home/ubuntu/
-                - /usr/local/
+                - /usr/
         - stage:
             identifier: build44fr
             type: CI

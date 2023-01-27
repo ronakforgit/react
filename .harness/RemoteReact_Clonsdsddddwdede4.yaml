@@ -37,7 +37,9 @@ pipeline:
                             name: Install depdendecy
                             spec:
                               shell: Bash
-                              command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
+                              command: |-
+                                yarn install --frozen-lockfile 
+                                # yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
                         - step:
                             identifier: Yarn
                             type: Run

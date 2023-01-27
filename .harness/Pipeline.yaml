@@ -376,10 +376,11 @@ pipeline:
                           spec:
                             connectorRef: ronakgcpbucket
                             bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                            key: v1-node_modules2-{{ arch }}-{{ .Revision }}
                             archiveFormat: Tar
                           when:
                             stageStatus: Success
+                            condition: "false"
                           failureStrategies: []
                       - step:
                           identifier: restore_yarn_cache_for_fixtures_dom
@@ -388,10 +389,11 @@ pipeline:
                           spec:
                             connectorRef: ronakgcpbucket
                             bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
+                            key: v1-yarn_cache2-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
                             archiveFormat: Tar
                           when:
                             stageStatus: Success
+                            condition: "false"
                           failureStrategies: []
                   - step:
                       identifier: Install_depdendecy
@@ -423,7 +425,7 @@ pipeline:
                           spec:
                             connectorRef: ronakgcpbucket
                             bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
+                            key: v1-yarn_cache2-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
                             sourcePaths:
                               - /home/ubuntu/.cache/yarn
                             archiveFormat: Tar
@@ -434,7 +436,7 @@ pipeline:
                           spec:
                             connectorRef: ronakgcpbucket
                             bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                            key: v1-node_modules2-{{ arch }}-{{ .Revision }}
                             sourcePaths:
                               - node_modules
                               - packages/eslint-plugin-react-hooks/node_modules

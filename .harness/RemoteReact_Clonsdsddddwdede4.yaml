@@ -57,7 +57,7 @@ pipeline:
                       failureStrategies: []
                       strategy:
                         parallelism: 40
-                        maxConcurrency: 40
+                        maxConcurrency: 1
                       spec: {}
                   - step:
                       type: SaveCacheGCS
@@ -72,7 +72,6 @@ pipeline:
                         archiveFormat: Tar
               sharedPaths:
                 - /home/ubuntu/
-                - /usr/
         - stage:
             identifier: build44fr
             type: CI

@@ -400,6 +400,21 @@ pipeline:
                       spec:
                         shell: Bash
                         command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
+                  - step:
+                      identifier: Yarn
+                      type: Run
+                      name: yarn build-combined
+                      spec:
+                        shell: Sh
+                        command: yarn build-combined
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                      failureStrategies: []
+                      strategy:
+                        parallelism: 40
+                        maxConcurrency: 40
                   - parallel:
                       - step:
                           identifier: Save_yarn_cache_for_fixtures_dom
@@ -445,18 +460,6 @@ pipeline:
                               - packages/scheduler/node_modules
                             archiveFormat: Tar
                   - step:
-                      identifier: Yarn
-                      type: Run
-                      name: yarn build-combined
-                      spec:
-                        shell: Sh
-                        command: yarn build-combined
-                        envVariables:
-                          CIRCLE_NODE_INDEX: <+strategy.iteration>
-                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
-                          TZ: /usr/share/zoneinfo/America/Los_Angeles
-                      failureStrategies: []
-                  - step:
                       type: SaveCacheGCS
                       name: persist data to next stage
                       identifier: SaveCachetoGCS_3
@@ -469,9 +472,6 @@ pipeline:
                         archiveFormat: Tar
               sharedPaths:
                 - /home/ubuntu/
-            strategy:
-              parallelism: 40
-              maxConcurrency: 40
         - stage:
             identifier: build4343
             type: CI

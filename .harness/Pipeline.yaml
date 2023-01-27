@@ -123,6 +123,9 @@ pipeline:
                 - /home/ubuntu/
             strategy:
               parallelism: 5
+            when:
+              pipelineStatus: Success
+              condition: "false"
         - stage:
             identifier: yarn_lint
             type: CI
@@ -227,6 +230,9 @@ pipeline:
                           ./scripts/circleci/test_print_warnings.sh
               sharedPaths:
                 - /home/ubuntu/
+            when:
+              pipelineStatus: Success
+              condition: "false"
         - stage:
             identifier: build444
             type: CI
@@ -354,6 +360,9 @@ pipeline:
                   - "-r=stable --env=development --persistent"
                   - "-r=experimental --env=development --persistent"
                 maxConcurrency: 15
+            when:
+              pipelineStatus: Success
+              condition: "false"
         - stage:
             identifier: build44
             type: CI

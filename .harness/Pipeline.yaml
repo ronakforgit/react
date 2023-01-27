@@ -633,6 +633,23 @@ pipeline:
                         archiveFormat: Tar
                       failureStrategies: []
               - step:
+                  identifier: yarn_test_build
+                  type: Run
+                  name: yarn_test_build
+                  spec:
+                    shell: Sh
+                    command: yarn test --build <+repeat.item> --ci
+                    envVariables:
+                      CIRCLE_NODE_INDEX: <+strategy.iteration>
+                      CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                      TZ: /usr/share/zoneinfo/America/Los_Angeles
+                  when:
+                    stageStatus: Success
+                  failureStrategies: []
+                  strategy:
+                    parallelism: 20
+                    maxConcurrency: 20
+              - step:
                   identifier: Install_depdendecy
                   type: Run
                   name: Install depdendecy
@@ -683,23 +700,6 @@ pipeline:
                           - packages/react/node_modules
                           - packages/scheduler/node_modules
                         archiveFormat: Tar
-              - step:
-                  identifier: yarn_test_build
-                  type: Run
-                  name: yarn_test_build
-                  spec:
-                    shell: Sh
-                    command: yarn test --build <+repeat.item> --ci
-                    envVariables:
-                      CIRCLE_NODE_INDEX: <+strategy.iteration>
-                      CIRCLE_NODE_TOTAL: <+strategy.iterations>
-                      TZ: /usr/share/zoneinfo/America/Los_Angeles
-                  when:
-                    stageStatus: Success
-                  failureStrategies: []
-                  strategy:
-                    parallelism: 20
-                    maxConcurrency: 20
           sharedPaths:
             - /home/ubuntu/
         strategy:

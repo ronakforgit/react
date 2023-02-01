@@ -14,119 +14,107 @@ pipeline:
           spec:
             branch: main
   stages:
-    - parallel:
-        - stage:
-            identifier: build
-            type: CI
-            name: Setup and yarn flow
-            spec:
-              cloneCodebase: true
-              platform:
-                os: Linux
-                arch: Amd64
-              runtime:
-                type: Cloud
-                spec: {}
-              execution:
-                steps:
-                  - parallel:
-                      - step:
-                          identifier: restore_node_modules
-                          type: RestoreCacheGCS
-                          name: restore_node_modules
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                            archiveFormat: Tar
-                          when:
-                            stageStatus: Success
-                          failureStrategies: []
-                      - step:
-                          identifier: restore_yarn_cache_for_fixtures_dom
-                          type: RestoreCacheGCS
-                          name: restore yarn cache for fixtures dom
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                            archiveFormat: Tar
-                          when:
-                            stageStatus: Success
-                          failureStrategies: []
+    - stage:
+        identifier: build4343
+        type: CI
+        name: setup
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - parallel:
                   - step:
-                      identifier: Install_depdendecy
-                      type: Run
-                      name: Install depdendecy
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
                       spec:
-                        shell: Bash
-                        command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
-                  - parallel:
-                      - step:
-                          identifier: Save_yarn_cache_for_fixtures_dom
-                          type: SaveCacheGCS
-                          name: Save yarn cache for fixtures dom
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                            sourcePaths:
-                              - /home/ubuntu/.cache/yarn
-                            archiveFormat: Tar
-                      - step:
-                          identifier: Save_node_modules_cache
-                          type: SaveCacheGCS
-                          name: Save node_modules cache
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                            sourcePaths:
-                              - node_modules
-                              - packages/eslint-plugin-react-hooks/node_modules
-                              - packages/react-art/node_modules
-                              - packages/react-client/node_modules
-                              - packages/react-devtools-core/node_modules
-                              - packages/react-devtools-extensions/node_modules
-                              - packages/react-devtools-inline/node_modules
-                              - packages/react-devtools-shared/node_modules
-                              - packages/react-devtools-shell/node_modules
-                              - packages/react-devtools-timeline/node_modules
-                              - packages/react-devtools/node_modules
-                              - packages/react-dom/node_modules
-                              - packages/react-interactions/node_modules
-                              - packages/react-native-renderer/node_modules
-                              - packages/react-reconciler/node_modules
-                              - packages/react-server-dom-relay/node_modules
-                              - packages/react-server-dom-webpack/node_modules
-                              - packages/react-server-native-relay/node_modules
-                              - packages/react-server/node_modules
-                              - packages/react-test-renderer/node_modules
-                              - packages/react/node_modules
-                              - packages/scheduler/node_modules
-                            archiveFormat: Tar
-                  - step:
-                      identifier: yarn_flow
-                      type: Run
-                      name: yarn flow
-                      spec:
-                        shell: Sh
-                        command: node ./scripts/tasks/flow-ci
-                        envVariables:
-                          CIRCLE_NODE_INDEX: <+strategy.iteration>
-                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
-                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
                       when:
                         stageStatus: Success
                       failureStrategies: []
-              sharedPaths:
-                - /home/ubuntu/
-            strategy:
-              parallelism: 5
+                  - step:
+                      identifier: restore_yarn_cache_for_fixtures_dom
+                      type: RestoreCacheGCS
+                      name: "restore yarn cache "
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                        condition: "false"
+                      failureStrategies: []
+              - step:
+                  identifier: Install_depdendecy
+                  type: Run
+                  name: Install depdendecy
+                  spec:
+                    shell: Bash
+                    command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
+              - parallel:
+                  - step:
+                      identifier: Save_yarn_cache_for_fixtures_dom
+                      type: SaveCacheGCS
+                      name: Save yarn cache
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}
+                        sourcePaths:
+                          - /home/ubuntu/.cache/yarn
+                        archiveFormat: Tar
+                  - step:
+                      identifier: Save_node_modules_cache
+                      type: SaveCacheGCS
+                      name: Save node_modules cache
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        sourcePaths:
+                          - node_modules
+                          - packages/eslint-plugin-react-hooks/node_modules
+                          - packages/react-art/node_modules
+                          - packages/react-client/node_modules
+                          - packages/react-devtools-core/node_modules
+                          - packages/react-devtools-extensions/node_modules
+                          - packages/react-devtools-inline/node_modules
+                          - packages/react-devtools-shared/node_modules
+                          - packages/react-devtools-shell/node_modules
+                          - packages/react-devtools-timeline/node_modules
+                          - packages/react-devtools/node_modules
+                          - packages/react-dom/node_modules
+                          - packages/react-interactions/node_modules
+                          - packages/react-native-renderer/node_modules
+                          - packages/react-reconciler/node_modules
+                          - packages/react-server-dom-relay/node_modules
+                          - packages/react-server-dom-webpack/node_modules
+                          - packages/react-server-native-relay/node_modules
+                          - packages/react-server/node_modules
+                          - packages/react-test-renderer/node_modules
+                          - packages/react/node_modules
+                          - packages/scheduler/node_modules
+                        archiveFormat: Tar
+          sharedPaths:
+            - /home/ubuntu/
+        when:
+          pipelineStatus: Success
+          condition: "false"
+    - parallel:
         - stage:
             identifier: yarn_lint
             type: CI
-            name: Setup and yarn lint
+            name: yarn lint
             spec:
               cloneCodebase: true
               platform:
@@ -137,82 +125,18 @@ pipeline:
                 spec: {}
               execution:
                 steps:
-                  - parallel:
-                      - step:
-                          identifier: restore_node_modules
-                          type: RestoreCacheGCS
-                          name: restore_node_modules
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                            archiveFormat: Tar
-                          when:
-                            stageStatus: Success
-                          failureStrategies: []
-                      - step:
-                          identifier: restore_yarn_cache_for_fixtures_dom
-                          type: RestoreCacheGCS
-                          name: restore yarn cache for fixtures dom
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                            archiveFormat: Tar
-                          when:
-                            stageStatus: Success
-                          failureStrategies: []
                   - step:
-                      identifier: Install_depdendecy
-                      type: Run
-                      name: Install depdendecy
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
                       spec:
-                        shell: Bash
-                        command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
-                  - parallel:
-                      - step:
-                          identifier: Save_yarn_cache_for_fixtures_dom
-                          type: SaveCacheGCS
-                          name: Save yarn cache for fixtures dom
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                            sourcePaths:
-                              - /home/ubuntu/.cache/yarn
-                            archiveFormat: Tar
-                      - step:
-                          identifier: Save_node_modules_cache
-                          type: SaveCacheGCS
-                          name: Save node_modules cache
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                            sourcePaths:
-                              - node_modules
-                              - packages/eslint-plugin-react-hooks/node_modules
-                              - packages/react-art/node_modules
-                              - packages/react-client/node_modules
-                              - packages/react-devtools-core/node_modules
-                              - packages/react-devtools-extensions/node_modules
-                              - packages/react-devtools-inline/node_modules
-                              - packages/react-devtools-shared/node_modules
-                              - packages/react-devtools-shell/node_modules
-                              - packages/react-devtools-timeline/node_modules
-                              - packages/react-devtools/node_modules
-                              - packages/react-dom/node_modules
-                              - packages/react-interactions/node_modules
-                              - packages/react-native-renderer/node_modules
-                              - packages/react-reconciler/node_modules
-                              - packages/react-server-dom-relay/node_modules
-                              - packages/react-server-dom-webpack/node_modules
-                              - packages/react-server-native-relay/node_modules
-                              - packages/react-server/node_modules
-                              - packages/react-test-renderer/node_modules
-                              - packages/react/node_modules
-                              - packages/scheduler/node_modules
-                            archiveFormat: Tar
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
                   - step:
                       identifier: yarn__lint
                       type: Run
@@ -227,10 +151,13 @@ pipeline:
                           ./scripts/circleci/test_print_warnings.sh
               sharedPaths:
                 - /home/ubuntu/
+            when:
+              pipelineStatus: Success
+              condition: "false"
         - stage:
             identifier: build444
             type: CI
-            name: Setup and yarn test
+            name: yarn test
             spec:
               cloneCodebase: true
               platform:
@@ -241,82 +168,18 @@ pipeline:
                 spec: {}
               execution:
                 steps:
-                  - parallel:
-                      - step:
-                          identifier: restore_node_modules
-                          type: RestoreCacheGCS
-                          name: restore_node_modules
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                            archiveFormat: Tar
-                          when:
-                            stageStatus: Success
-                          failureStrategies: []
-                      - step:
-                          identifier: restore_yarn_cache_for_fixtures_dom
-                          type: RestoreCacheGCS
-                          name: restore yarn cache for fixtures dom
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                            archiveFormat: Tar
-                          when:
-                            stageStatus: Success
-                          failureStrategies: []
                   - step:
-                      identifier: Install_depdendecy
-                      type: Run
-                      name: Install depdendecy
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
                       spec:
-                        shell: Bash
-                        command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
-                  - parallel:
-                      - step:
-                          identifier: Save_yarn_cache_for_fixtures_dom
-                          type: SaveCacheGCS
-                          name: Save yarn cache for fixtures dom
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                            sourcePaths:
-                              - /home/ubuntu/.cache/yarn
-                            archiveFormat: Tar
-                      - step:
-                          identifier: Save_node_modules_cache
-                          type: SaveCacheGCS
-                          name: Save node_modules cache
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                            sourcePaths:
-                              - node_modules
-                              - packages/eslint-plugin-react-hooks/node_modules
-                              - packages/react-art/node_modules
-                              - packages/react-client/node_modules
-                              - packages/react-devtools-core/node_modules
-                              - packages/react-devtools-extensions/node_modules
-                              - packages/react-devtools-inline/node_modules
-                              - packages/react-devtools-shared/node_modules
-                              - packages/react-devtools-shell/node_modules
-                              - packages/react-devtools-timeline/node_modules
-                              - packages/react-devtools/node_modules
-                              - packages/react-dom/node_modules
-                              - packages/react-interactions/node_modules
-                              - packages/react-native-renderer/node_modules
-                              - packages/react-reconciler/node_modules
-                              - packages/react-server-dom-relay/node_modules
-                              - packages/react-server-dom-webpack/node_modules
-                              - packages/react-server-native-relay/node_modules
-                              - packages/react-server/node_modules
-                              - packages/react-test-renderer/node_modules
-                              - packages/react/node_modules
-                              - packages/scheduler/node_modules
-                            archiveFormat: Tar
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
                   - step:
                       identifier: yarn_flow
                       type: Run
@@ -354,10 +217,13 @@ pipeline:
                   - "-r=stable --env=development --persistent"
                   - "-r=experimental --env=development --persistent"
                 maxConcurrency: 15
+            when:
+              pipelineStatus: Success
+              condition: "false"
         - stage:
             identifier: build44
             type: CI
-            name: Setup and yarn build combined
+            name: yarn build combined
             spec:
               cloneCodebase: true
               platform:
@@ -368,82 +234,18 @@ pipeline:
                 spec: {}
               execution:
                 steps:
-                  - parallel:
-                      - step:
-                          identifier: restore_node_modules
-                          type: RestoreCacheGCS
-                          name: restore_node_modules
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                            archiveFormat: Tar
-                          when:
-                            stageStatus: Success
-                          failureStrategies: []
-                      - step:
-                          identifier: restore_yarn_cache_for_fixtures_dom
-                          type: RestoreCacheGCS
-                          name: restore yarn cache for fixtures dom
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                            archiveFormat: Tar
-                          when:
-                            stageStatus: Success
-                          failureStrategies: []
                   - step:
-                      identifier: Install_depdendecy
-                      type: Run
-                      name: Install depdendecy
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
                       spec:
-                        shell: Bash
-                        command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
-                  - parallel:
-                      - step:
-                          identifier: Save_yarn_cache_for_fixtures_dom
-                          type: SaveCacheGCS
-                          name: Save yarn cache for fixtures dom
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                            sourcePaths:
-                              - /home/ubuntu/.cache/yarn
-                            archiveFormat: Tar
-                      - step:
-                          identifier: Save_node_modules_cache
-                          type: SaveCacheGCS
-                          name: Save node_modules cache
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                            sourcePaths:
-                              - node_modules
-                              - packages/eslint-plugin-react-hooks/node_modules
-                              - packages/react-art/node_modules
-                              - packages/react-client/node_modules
-                              - packages/react-devtools-core/node_modules
-                              - packages/react-devtools-extensions/node_modules
-                              - packages/react-devtools-inline/node_modules
-                              - packages/react-devtools-shared/node_modules
-                              - packages/react-devtools-shell/node_modules
-                              - packages/react-devtools-timeline/node_modules
-                              - packages/react-devtools/node_modules
-                              - packages/react-dom/node_modules
-                              - packages/react-interactions/node_modules
-                              - packages/react-native-renderer/node_modules
-                              - packages/react-reconciler/node_modules
-                              - packages/react-server-dom-relay/node_modules
-                              - packages/react-server-dom-webpack/node_modules
-                              - packages/react-server-native-relay/node_modules
-                              - packages/react-server/node_modules
-                              - packages/react-test-renderer/node_modules
-                              - packages/react/node_modules
-                              - packages/scheduler/node_modules
-                            archiveFormat: Tar
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
                   - step:
                       identifier: Yarn
                       type: Run
@@ -456,26 +258,45 @@ pipeline:
                           CIRCLE_NODE_TOTAL: <+strategy.iterations>
                           TZ: /usr/share/zoneinfo/America/Los_Angeles
                       failureStrategies: []
-                  - step:
-                      type: SaveCacheGCS
-                      name: persist data to next stage
-                      identifier: SaveCachetoGCS_3
-                      spec:
-                        connectorRef: ronakgcpbucket
-                        bucket: migration-artifact-comman
-                        key: buildcache-temp
-                        sourcePaths:
-                          - build/
-                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                  - parallel:
+                      - step:
+                          type: SaveCacheGCS
+                          name: persist data to next stage
+                          identifier: SaveCachetoGCS_3
+                          spec:
+                            connectorRef: ronakgcpbucket
+                            bucket: migration-artifact-comman
+                            key: temp-build-<+strategy.iteration>
+                            sourcePaths:
+                              - build
+                            archiveFormat: Tar
+                          when:
+                            stageStatus: Success
+                            condition: "false"
+                          failureStrategies: []
+                      - step:
+                          type: GCSUpload
+                          name: Upload Artifacts to GCS_1
+                          identifier: UploadArtifactstoGCS_1
+                          spec:
+                            connectorRef: ronakgcpbucket
+                            bucket: migration-artifact-comman
+                            sourcePath: build
+                            target: build
               sharedPaths:
                 - /home/ubuntu/
             strategy:
               parallelism: 40
-              maxConcurrency: 40
+              maxConcurrency: 2
+            when:
+              pipelineStatus: Success
+              condition: "false"
         - stage:
-            identifier: build4343
+            identifier: build
             type: CI
-            name: dummy
+            name: yarn flow
             spec:
               cloneCodebase: true
               platform:
@@ -486,82 +307,18 @@ pipeline:
                 spec: {}
               execution:
                 steps:
-                  - parallel:
-                      - step:
-                          identifier: restore_node_modules
-                          type: RestoreCacheGCS
-                          name: restore_node_modules
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                            archiveFormat: Tar
-                          when:
-                            stageStatus: Success
-                          failureStrategies: []
-                      - step:
-                          identifier: restore_yarn_cache_for_fixtures_dom
-                          type: RestoreCacheGCS
-                          name: restore yarn cache for fixtures dom
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                            archiveFormat: Tar
-                          when:
-                            stageStatus: Success
-                          failureStrategies: []
                   - step:
-                      identifier: Install_depdendecy
-                      type: Run
-                      name: Install depdendecy
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
                       spec:
-                        shell: Bash
-                        command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
-                  - parallel:
-                      - step:
-                          identifier: Save_yarn_cache_for_fixtures_dom
-                          type: SaveCacheGCS
-                          name: Save yarn cache for fixtures dom
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
-                            sourcePaths:
-                              - /home/ubuntu/.cache/yarn
-                            archiveFormat: Tar
-                      - step:
-                          identifier: Save_node_modules_cache
-                          type: SaveCacheGCS
-                          name: Save node_modules cache
-                          spec:
-                            connectorRef: ronakgcpbucket
-                            bucket: migration-artifact-comman
-                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                            sourcePaths:
-                              - node_modules
-                              - packages/eslint-plugin-react-hooks/node_modules
-                              - packages/react-art/node_modules
-                              - packages/react-client/node_modules
-                              - packages/react-devtools-core/node_modules
-                              - packages/react-devtools-extensions/node_modules
-                              - packages/react-devtools-inline/node_modules
-                              - packages/react-devtools-shared/node_modules
-                              - packages/react-devtools-shell/node_modules
-                              - packages/react-devtools-timeline/node_modules
-                              - packages/react-devtools/node_modules
-                              - packages/react-dom/node_modules
-                              - packages/react-interactions/node_modules
-                              - packages/react-native-renderer/node_modules
-                              - packages/react-reconciler/node_modules
-                              - packages/react-server-dom-relay/node_modules
-                              - packages/react-server-dom-webpack/node_modules
-                              - packages/react-server-native-relay/node_modules
-                              - packages/react-server/node_modules
-                              - packages/react-test-renderer/node_modules
-                              - packages/react/node_modules
-                              - packages/scheduler/node_modules
-                            archiveFormat: Tar
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
                   - step:
                       identifier: yarn_flow
                       type: Run
@@ -576,28 +333,27 @@ pipeline:
                       when:
                         stageStatus: Success
                       failureStrategies: []
-                      strategy:
-                        parallelism: 5
               sharedPaths:
                 - /home/ubuntu/
+            strategy:
+              parallelism: 5
             when:
               pipelineStatus: Success
               condition: "false"
-    - stage:
-        identifier: builddf
-        type: CI
-        name: yarn_test_build
-        spec:
-          cloneCodebase: true
-          platform:
-            os: Linux
-            arch: Amd64
-          runtime:
-            type: Cloud
-            spec: {}
-          execution:
-            steps:
-              - parallel:
+        - stage:
+            identifier: dum2
+            type: CI
+            name: scrape_warning_messages
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
                   - step:
                       identifier: restore_node_modules
                       type: RestoreCacheGCS
@@ -611,35 +367,791 @@ pipeline:
                         stageStatus: Success
                       failureStrategies: []
                   - step:
-                      identifier: restore_yarn_cache_for_fixtures_dom
-                      type: RestoreCacheGCS
-                      name: restore yarn cache for fixtures dom
+                      identifier: yarn_test_build
+                      type: Run
+                      name: "scarpe warning messages "
+                      spec:
+                        shell: Sh
+                        command: |2-
+                              mkdir -p ./build
+                              node ./scripts/print-warnings/print-warnings.js > build/WARNINGS
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+                  - step:
+                      type: GCSUpload
+                      name: persist to next stage
+                      identifier: persist_to_next_stage
                       spec:
                         connectorRef: ronakgcpbucket
                         bucket: migration-artifact-comman
-                        key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
+                        sourcePath: build
+              sharedPaths:
+                - /home/ubuntu/
+            when:
+              pipelineStatus: Success
+              condition: "false"
+        - stage:
+            identifier: dum3
+            type: CI
+            name: download_base_build_for_sizebot
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
                         archiveFormat: Tar
                       when:
                         stageStatus: Success
                       failureStrategies: []
                   - step:
-                      type: RestoreCacheGCS
-                      name: restore Build Data
-                      identifier: restore_Build_Data
+                      identifier: yarn_test_build
+                      type: Run
+                      name: Download artifacts for base revision
+                      spec:
+                        shell: Sh
+                        command: |-
+                          git fetch origin main
+                          cd ./scripts/release && yarn && cd ../../
+                          scripts/release/download-experimental-build.js --commit=$(git merge-base HEAD origin/main) --allowBrokenCI
+                          mv ./build ./base-build
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+                  - step:
+                      type: Run
+                      name: Delete extraneous files
+                      identifier: Delete_extraneous_files
+                      spec:
+                        shell: Sh
+                        command: rm -rf ./base-build/node_modules
+                  - step:
+                      type: GCSUpload
+                      name: persist to next stage
+                      identifier: persist_to_next_stage
                       spec:
                         connectorRef: ronakgcpbucket
                         bucket: migration-artifact-comman
-                        key: buildcache-temp
+                        sourcePath: build
+              sharedPaths:
+                - /home/ubuntu/
+            when:
+              pipelineStatus: Success
+              condition: "false"
+        - stage:
+            identifier: dum4
+            type: CI
+            name: check_generated_fizz_runtime
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
                         archiveFormat: Tar
+                      when:
+                        stageStatus: Success
                       failureStrategies: []
-              - step:
-                  identifier: Install_depdendecy
-                  type: Run
-                  name: Install depdendecy
-                  spec:
-                    shell: Bash
-                    command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
-              - parallel:
+                  - step:
+                      identifier: yarn_test_build
+                      type: Run
+                      name: check_generated_fizz_runtime
+                      spec:
+                        shell: Sh
+                        command: |2
+                                      yarn generate-inline-fizz-runtime
+                                      git diff --quiet || (echo "There was a change to the Fizz runtime. Run `yarn generate-inline-fizz-runtime` and check in the result." && false)
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+              sharedPaths:
+                - /home/ubuntu/
+            when:
+              pipelineStatus: Success
+              condition: "false"
+    - parallel:
+        - stage:
+            identifier: builddf
+            type: CI
+            name: yarn_test_build
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: Download Datav - from build
+                      identifier: Download_Datav_from_build
+                      spec:
+                        shell: Bash
+                        command: |
+
+                          echo $KEY > data.json
+
+
+                          gcloud auth activate-service-account --key-file data.json
+
+
+                          # Replace <BUCKET_NAME>, <FILE_NAME>, and <SERVICE_ACCOUNT_EMAIL> with your values
+                          BUCKET_NAME="migration-artifact-comman"
+                          FILE_NAME="build/"
+                          SERVICE_ACCOUNT_EMAIL="ronak-cme@commeng-play.iam.gserviceaccount.com"
+
+                          # Set the active account to the service account email
+                          gcloud config set account "$SERVICE_ACCOUNT_EMAIL"
+
+                          # Download the file from GCS bucket
+                          gsutil cp  -r "gs://$BUCKET_NAME/$FILE_NAME" .
+
+                          echo "Download complete!"
+
+
+                          ls 
+
+                          tree -L 2
+                        envVariables:
+                          KEY: "<+secrets.getValue(\"jsongcpronak\")> "
+                  - step:
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+                  - step:
+                      identifier: yarn_test_build
+                      type: Run
+                      name: yarn_test_build
+                      spec:
+                        shell: Sh
+                        command: yarn test --build <+repeat.item> --ci
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+                      strategy:
+                        parallelism: 20
+                        maxConcurrency: 20
+              sharedPaths:
+                - /home/ubuntu/
+            strategy:
+              repeat:
+                items:
+                  - "-r=stable --env=development"
+                  - "-r=stable --env=production"
+                  - "-r=experimental --env=development"
+                  - "-r=experimental --env=production"
+                  - "--project=devtools -r=experimental"
+                maxConcurrency: 15
+            when:
+              pipelineStatus: Success
+              condition: "false"
+        - stage:
+            identifier: buildddweedf
+            type: CI
+            name: yarn_lint_build
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: Download Datav - from build
+                      identifier: Download_Datav_from_build
+                      spec:
+                        shell: Bash
+                        command: |
+
+                          echo $KEY > data.json
+
+
+                          gcloud auth activate-service-account --key-file data.json
+
+
+                          # Replace <BUCKET_NAME>, <FILE_NAME>, and <SERVICE_ACCOUNT_EMAIL> with your values
+                          BUCKET_NAME="migration-artifact-comman"
+                          FILE_NAME="build/"
+                          SERVICE_ACCOUNT_EMAIL="ronak-cme@commeng-play.iam.gserviceaccount.com"
+
+                          # Set the active account to the service account email
+                          gcloud config set account "$SERVICE_ACCOUNT_EMAIL"
+
+                          # Download the file from GCS bucket
+                          gsutil cp  -r "gs://$BUCKET_NAME/$FILE_NAME" .
+
+                          echo "Download complete!"
+
+
+                          ls 
+
+                          tree -L 2
+                        envVariables:
+                          KEY: "<+secrets.getValue(\"jsongcpronak\")> "
+                  - step:
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+                  - step:
+                      identifier: yarn_test_build
+                      type: Run
+                      name: yarn_lint_build
+                      spec:
+                        shell: Sh
+                        command: yarn lint-build
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+              sharedPaths:
+                - /home/ubuntu/
+            when:
+              pipelineStatus: Success
+              condition: "false"
+        - stage:
+            identifier: yarn_check_release_dependencies
+            type: CI
+            name: yarn_check_release_dependencies
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: Download Datav - from build
+                      identifier: Download_Datav_from_build
+                      spec:
+                        shell: Bash
+                        command: |
+
+                          echo $KEY > data.json
+
+
+                          gcloud auth activate-service-account --key-file data.json
+
+
+                          # Replace <BUCKET_NAME>, <FILE_NAME>, and <SERVICE_ACCOUNT_EMAIL> with your values
+                          BUCKET_NAME="migration-artifact-comman"
+                          FILE_NAME="build/"
+                          SERVICE_ACCOUNT_EMAIL="ronak-cme@commeng-play.iam.gserviceaccount.com"
+
+                          # Set the active account to the service account email
+                          gcloud config set account "$SERVICE_ACCOUNT_EMAIL"
+
+                          # Download the file from GCS bucket
+                          gsutil cp  -r "gs://$BUCKET_NAME/$FILE_NAME" .
+
+                          echo "Download complete!"
+
+
+                          ls 
+
+                          tree -L 2
+                        envVariables:
+                          KEY: "<+secrets.getValue(\"jsongcpronak\")> "
+                  - step:
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+                  - step:
+                      identifier: yarn_checkreleasedependencies
+                      type: Run
+                      name: yarn check-release-dependencies
+                      spec:
+                        shell: Sh
+                        command: yarn check-release-dependencies
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                      when:
+                        stageStatus: Success
+                        condition: "false"
+                      failureStrategies: []
+              sharedPaths:
+                - /home/ubuntu/
+            when:
+              pipelineStatus: Success
+              condition: "false"
+        - stage:
+            identifier: dum1
+            type: CI
+            name: check_error_codes
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: Download Datav - from build
+                      identifier: Download_Datav_from_build
+                      spec:
+                        shell: Bash
+                        command: |
+
+                          echo $KEY > data.json
+
+
+                          gcloud auth activate-service-account --key-file data.json
+
+
+                          # Replace <BUCKET_NAME>, <FILE_NAME>, and <SERVICE_ACCOUNT_EMAIL> with your values
+                          BUCKET_NAME="migration-artifact-comman"
+                          FILE_NAME="build/"
+                          SERVICE_ACCOUNT_EMAIL="ronak-cme@commeng-play.iam.gserviceaccount.com"
+
+                          # Set the active account to the service account email
+                          gcloud config set account "$SERVICE_ACCOUNT_EMAIL"
+
+                          # Download the file from GCS bucket
+                          gsutil cp  -r "gs://$BUCKET_NAME/$FILE_NAME" .
+
+                          echo "Download complete!"
+
+
+                          ls 
+
+                          tree -L 2
+                        envVariables:
+                          KEY: "<+secrets.getValue(\"jsongcpronak\")> "
+                  - step:
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+                  - step:
+                      identifier: check_error_codes
+                      type: Run
+                      name: check_error_codes
+                      spec:
+                        shell: Sh
+                        command: |
+                          yarn extract-errors
+                          git diff --quiet || (echo "Found unminified errors. Either update the error codes map or disable error minification for the affected build, if appropriate." && false)
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+              sharedPaths:
+                - /home/ubuntu/
+        - stage:
+            identifier: dum5
+            type: CI
+            name: process_artifacts_combined
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: Download Datav - from build
+                      identifier: Download_Datav_from_build
+                      spec:
+                        shell: Bash
+                        command: |
+
+                          echo $KEY > data.json
+
+
+                          gcloud auth activate-service-account --key-file data.json
+
+
+                          # Replace <BUCKET_NAME>, <FILE_NAME>, and <SERVICE_ACCOUNT_EMAIL> with your values
+                          BUCKET_NAME="migration-artifact-comman"
+                          FILE_NAME="build/"
+                          SERVICE_ACCOUNT_EMAIL="ronak-cme@commeng-play.iam.gserviceaccount.com"
+
+                          # Set the active account to the service account email
+                          gcloud config set account "$SERVICE_ACCOUNT_EMAIL"
+
+                          # Download the file from GCS bucket
+                          gsutil cp  -r "gs://$BUCKET_NAME/$FILE_NAME" .
+
+                          echo "Download complete!"
+
+
+                          ls 
+
+                          tree -L 2
+                        envVariables:
+                          KEY: "<+secrets.getValue(\"jsongcpronak\")> "
+                  - step:
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+                  - step:
+                      identifier: yarn_test_build
+                      type: Run
+                      name: commit sha
+                      spec:
+                        shell: Sh
+                        command: "# echo \"<< pipeline.git.revision\t>>\" >> build/COMMIT_SHA\n \necho \"<+codebase.commitSha>\" >> build/COMMIT_SHA\n\n# Compress build directory into a single tarball for easy download\ntar -zcvf ./build.tgz ./build\n# TODO: Migrate scripts to use `build` directory instead of `build2`\ncp ./build.tgz ./build2.tgz\n"
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+              sharedPaths:
+                - /home/ubuntu/
+        - stage:
+            identifier: dum6
+            type: CI
+            name: build_devtools_and_process_artifacts
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: Download Datav - from build
+                      identifier: Download_Datav_from_build
+                      spec:
+                        shell: Bash
+                        command: |
+
+                          echo $KEY > data.json
+
+
+                          gcloud auth activate-service-account --key-file data.json
+
+
+                          # Replace <BUCKET_NAME>, <FILE_NAME>, and <SERVICE_ACCOUNT_EMAIL> with your values
+                          BUCKET_NAME="migration-artifact-comman"
+                          FILE_NAME="build/"
+                          SERVICE_ACCOUNT_EMAIL="ronak-cme@commeng-play.iam.gserviceaccount.com"
+
+                          # Set the active account to the service account email
+                          gcloud config set account "$SERVICE_ACCOUNT_EMAIL"
+
+                          # Download the file from GCS bucket
+                          gsutil cp  -r "gs://$BUCKET_NAME/$FILE_NAME" .
+
+                          echo "Download complete!"
+
+
+                          ls 
+
+                          tree -L 2
+                        envVariables:
+                          KEY: "<+secrets.getValue(\"jsongcpronak\")> "
+                  - step:
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+                  - step:
+                      identifier: yarn_test_build
+                      type: Run
+                      name: build_devtools_and_process_artifacts
+                      spec:
+                        shell: Sh
+                        command: ./scripts/circleci/pack_and_store_devtools_artifacts.sh
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                          RELEASE_CHANNEL: experimental
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+                  - step:
+                      type: GCSUpload
+                      name: Upload Artifacts to GCS_1
+                      identifier: UploadArtifactstoGCS_1
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        sourcePath: build
+                        target: build
+              sharedPaths:
+                - /home/ubuntu/
+        - stage:
+            identifier: dum7
+            type: CI
+            name: sizebot
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: Download Datav - from build
+                      identifier: Download_Datav_from_build
+                      spec:
+                        shell: Bash
+                        command: |
+
+                          echo $KEY > data.json
+
+
+                          gcloud auth activate-service-account --key-file data.json
+
+
+                          # Replace <BUCKET_NAME>, <FILE_NAME>, and <SERVICE_ACCOUNT_EMAIL> with your values
+                          BUCKET_NAME="migration-artifact-comman"
+                          FILE_NAME="build/"
+                          SERVICE_ACCOUNT_EMAIL="ronak-cme@commeng-play.iam.gserviceaccount.com"
+
+                          # Set the active account to the service account email
+                          gcloud config set account "$SERVICE_ACCOUNT_EMAIL"
+
+                          # Download the file from GCS bucket
+                          gsutil cp  -r "gs://$BUCKET_NAME/$FILE_NAME" .
+
+                          echo "Download complete!"
+
+
+                          ls 
+
+                          tree -L 2
+                        envVariables:
+                          KEY: "<+secrets.getValue(\"jsongcpronak\")> "
+                  - step:
+                      identifier: restore_node_modules
+                      type: RestoreCacheGCS
+                      name: restore_node_modules
+                      spec:
+                        connectorRef: ronakgcpbucket
+                        bucket: migration-artifact-comman
+                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                        archiveFormat: Tar
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+                  - step:
+                      identifier: yarn_test_build
+                      type: Run
+                      name: sizebot
+                      spec:
+                        shell: Sh
+                        command: |-
+                          echo "echo <+codebase.commitSha>" >> build/COMMIT_SHA
+                          node ./scripts/tasks/danger
+                        envVariables:
+                          CIRCLE_NODE_INDEX: <+strategy.iteration>
+                          CIRCLE_NODE_TOTAL: <+strategy.iterations>
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+                      when:
+                        stageStatus: Success
+                      failureStrategies: []
+              sharedPaths:
+                - /home/ubuntu/
+            when:
+              pipelineStatus: Success
+              condition: "false"
+        - stage:
+            identifier: sre
+            type: CI
+            name: RELEASE_CHANNEL_stable_yarn_test_dom_fixtures
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: attach workspace
+                      identifier: attach_workspace
+                      spec:
+                        shell: Bash
+                        command: |
+
+                          echo $KEY > data.json
+
+
+                          gcloud auth activate-service-account --key-file data.json
+
+
+                          # Replace <BUCKET_NAME>, <FILE_NAME>, and <SERVICE_ACCOUNT_EMAIL> with your values
+                          BUCKET_NAME="migration-artifact-comman"
+                          FILE_NAME="build/"
+                          SERVICE_ACCOUNT_EMAIL="ronak-cme@commeng-play.iam.gserviceaccount.com"
+
+                          # Set the active account to the service account email
+                          gcloud config set account "$SERVICE_ACCOUNT_EMAIL"
+
+                          # Download the file from GCS bucket
+                          gsutil cp  -r "gs://$BUCKET_NAME/$FILE_NAME" .
+
+                          echo "Download complete!"
+
+
+                          ls 
+
+                          tree -L 2
+                        envVariables:
+                          KEY: "<+secrets.getValue(\"jsongcpronak\")> "
+                  - parallel:
+                      - step:
+                          identifier: restore_node_modules
+                          type: RestoreCacheGCS
+                          name: restore_node_modules
+                          spec:
+                            connectorRef: ronakgcpbucket
+                            bucket: migration-artifact-comman
+                            key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                            archiveFormat: Tar
+                          when:
+                            stageStatus: Success
+                          failureStrategies: []
+                      - step:
+                          identifier: restore_yarn_cache_for_fixtures_dom
+                          type: RestoreCacheGCS
+                          name: restore yarn cache for fixtures dom
+                          spec:
+                            connectorRef: ronakgcpbucket
+                            bucket: migration-artifact-comman
+                            key: v1-yarn_cache-{{ arch }}-{{ checksum "yarn.lock" }}-fixtures/dom
+                            archiveFormat: Tar
+                          when:
+                            stageStatus: Success
+                          failureStrategies: []
+                  - step:
+                      identifier: Install_depdendecy
+                      type: Run
+                      name: Install depdendecy
+                      spec:
+                        shell: Bash
+                        command: |-
+                          cd fixtures/dom
+                          yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
                   - step:
                       identifier: Save_yarn_cache_for_fixtures_dom
                       type: SaveCacheGCS
@@ -652,62 +1164,99 @@ pipeline:
                           - /home/ubuntu/.cache/yarn
                         archiveFormat: Tar
                   - step:
-                      identifier: Save_node_modules_cache
-                      type: SaveCacheGCS
-                      name: Save node_modules cache
+                      type: Run
+                      name: Run DOM fixture tests
+                      identifier: Run_DOM_fixture_tests
                       spec:
-                        connectorRef: ronakgcpbucket
-                        bucket: migration-artifact-comman
-                        key: v1-node_modules-{{ arch }}-{{ .Revision }}
-                        sourcePaths:
-                          - node_modules
-                          - packages/eslint-plugin-react-hooks/node_modules
-                          - packages/react-art/node_modules
-                          - packages/react-client/node_modules
-                          - packages/react-devtools-core/node_modules
-                          - packages/react-devtools-extensions/node_modules
-                          - packages/react-devtools-inline/node_modules
-                          - packages/react-devtools-shared/node_modules
-                          - packages/react-devtools-shell/node_modules
-                          - packages/react-devtools-timeline/node_modules
-                          - packages/react-devtools/node_modules
-                          - packages/react-dom/node_modules
-                          - packages/react-interactions/node_modules
-                          - packages/react-native-renderer/node_modules
-                          - packages/react-reconciler/node_modules
-                          - packages/react-server-dom-relay/node_modules
-                          - packages/react-server-dom-webpack/node_modules
-                          - packages/react-server-native-relay/node_modules
-                          - packages/react-server/node_modules
-                          - packages/react-test-renderer/node_modules
-                          - packages/react/node_modules
-                          - packages/scheduler/node_modules
-                        archiveFormat: Tar
+                        shell: Sh
+                        command: |+
+                          cd fixtures/dom
+                          # npm install --save react react-dom react-scripts
+                          # sudo yarn
+                          yarn prestart
+                          CI=true yarn test a  --maxWorkers=2
+
+                        envVariables:
+                          RELEASE_CHANNEL: stable
+                          TZ: /usr/share/zoneinfo/America/Los_Angeles
+              sharedPaths:
+                - /home/ubuntu/
+            when:
+              pipelineStatus: Success
+    - stage:
+        identifier: dum8
+        type: CI
+        name: run_devtools_e2e_tests
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
               - step:
-                  identifier: yarn_test_build
                   type: Run
-                  name: yarn_test_build
+                  name: Download Data - from build
+                  identifier: Download_Datav_from_build
                   spec:
-                    shell: Sh
-                    command: yarn test --build <+repeat.item> --ci
+                    shell: Bash
+                    command: |
+
+                      echo $KEY > data.json
+
+
+                      gcloud auth activate-service-account --key-file data.json
+
+
+                      # Replace <BUCKET_NAME>, <FILE_NAME>, and <SERVICE_ACCOUNT_EMAIL> with your values
+                      BUCKET_NAME="migration-artifact-comman"
+                      FILE_NAME="build"
+                      SERVICE_ACCOUNT_EMAIL="ronak-cme@commeng-play.iam.gserviceaccount.com"
+
+                      # Set the active account to the service account email
+                      gcloud config set account "$SERVICE_ACCOUNT_EMAIL"
+
+                      # Download the file from GCS bucket
+                      gsutil cp  -r "gs://$BUCKET_NAME/$FILE_NAME" .
+
+                      echo "Download complete!"
+
+
+                      ls 
+
+                      tree -L 2
                     envVariables:
-                      CIRCLE_NODE_INDEX: <+strategy.iteration>
-                      CIRCLE_NODE_TOTAL: <+strategy.iterations>
-                      TZ: /usr/share/zoneinfo/America/Los_Angeles
+                      KEY: "<+secrets.getValue(\"jsongcpronak\")> "
+              - step:
+                  identifier: restore_node_modules
+                  type: RestoreCacheGCS
+                  name: restore_node_modules
+                  spec:
+                    connectorRef: ronakgcpbucket
+                    bucket: migration-artifact-comman
+                    key: v1-node_modules-{{ arch }}-{{ .Revision }}
+                    archiveFormat: Tar
                   when:
                     stageStatus: Success
                   failureStrategies: []
-                  strategy:
-                    parallelism: 20
-                    maxConcurrency: 20
+              - step:
+                  type: Run
+                  name: Run_exp
+                  identifier: Run_exp
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: cimg/openjdk:18.0-node
+                    shell: Sh
+                    command: |2-
+                                 sudo  npx playwright install
+                                  sudo npx playwright install-deps
+                                 sudo  ./scripts/circleci/run_devtools_e2e_tests.js
+                    envVariables:
+                      RELEASE_CHANNEL: experimental
           sharedPaths:
             - /home/ubuntu/
-        strategy:
-          repeat:
-            items:
-              - "-r=stable --env=development"
-              - "-r=stable --env=production"
-              - "-r=experimental --env=development"
-              - "-r=experimental --env=production"
-              - "--project=devtools -r=experimental"
-            maxConcurrency: 15
+        when:
+          pipelineStatus: Success

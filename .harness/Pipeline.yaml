@@ -109,7 +109,6 @@ pipeline:
             - /home/ubuntu/
         when:
           pipelineStatus: Success
-          condition: "false"
     - parallel:
         - stage:
             identifier: yarn_lint
@@ -153,7 +152,6 @@ pipeline:
                 - /home/ubuntu/
             when:
               pipelineStatus: Success
-              condition: "false"
         - stage:
             identifier: build444
             type: CI
@@ -219,7 +217,6 @@ pipeline:
                 maxConcurrency: 15
             when:
               pipelineStatus: Success
-              condition: "false"
         - stage:
             identifier: build44
             type: CI
@@ -292,7 +289,6 @@ pipeline:
               maxConcurrency: 2
             when:
               pipelineStatus: Success
-              condition: "false"
         - stage:
             identifier: build
             type: CI
@@ -339,7 +335,6 @@ pipeline:
               parallelism: 5
             when:
               pipelineStatus: Success
-              condition: "false"
         - stage:
             identifier: dum2
             type: CI
@@ -394,7 +389,6 @@ pipeline:
                 - /home/ubuntu/
             when:
               pipelineStatus: Success
-              condition: "false"
         - stage:
             identifier: dum3
             type: CI
@@ -505,7 +499,6 @@ pipeline:
                 - /home/ubuntu/
             when:
               pipelineStatus: Success
-              condition: "false"
     - parallel:
         - stage:
             identifier: builddf
@@ -596,7 +589,6 @@ pipeline:
                 maxConcurrency: 15
             when:
               pipelineStatus: Success
-              condition: "false"
         - stage:
             identifier: buildddweedf
             type: CI
@@ -674,7 +666,6 @@ pipeline:
                 - /home/ubuntu/
             when:
               pipelineStatus: Success
-              condition: "false"
         - stage:
             identifier: yarn_check_release_dependencies
             type: CI
@@ -747,13 +738,11 @@ pipeline:
                           TZ: /usr/share/zoneinfo/America/Los_Angeles
                       when:
                         stageStatus: Success
-                        condition: "false"
                       failureStrategies: []
               sharedPaths:
                 - /home/ubuntu/
             when:
               pipelineStatus: Success
-              condition: "false"
         - stage:
             identifier: dum1
             type: CI

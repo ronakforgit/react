@@ -153,4 +153,4 @@ Consider a  pipeline with 3 stages A B C  with the following  requirements 
 What will be the total execution time of the pipeline ?
 
 *   CircelCi : 10 mins. because C will start execution as soon as B ends . Its not dependent on A.
-*   Harness CI :  12 mins .  C will wait for both A and B to be completed , ie C has to wait  8 mins  extra
+*   Harness CI :  15 mins.  C will wait for both A and B to be completed , ie C has to wait  8 mins  extra

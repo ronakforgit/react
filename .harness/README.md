@@ -154,3 +154,42 @@ What will be the total execution time of the pipeline ?
 
 *   CircelCi : 10 mins. because C will start execution as soon as B ends . Its not dependent on A.
 *   Harness CI :  15 mins.  C will wait for both A and B to be completed , ie C has to wait  8 mins  extra
+
+circle/config.yml
+```yaml
+jobs:
+  job1:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - run:
+          name: Sleep Command 1
+          command: |
+            sleep 200
+  job2:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - run:
+          name: Sleep Command 2
+          command: |
+            sleep 50
+  job3:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - run:
+          name: Sleep Command 3
+          command: |
+            sleep 50
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - job1
+      - job2
+      - job3:
+          requires:
+            - job2
+```
+![](https://33333.cdn.cke-cs.com/kSW7V9NHUXugvhoQeFaf/images/372eb9028cba7b3e4a49d8f6a89edbff3d918fab6d9f58dc.png)

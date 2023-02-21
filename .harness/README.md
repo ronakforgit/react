@@ -1,8 +1,6 @@
 ## React CircleCI to Harness CI Migration Guide:
 
-Before migrating from [CircleCI to Harness CI](https://github.com/harness-community/ci-migration-guides/tree/main/CIRCLECI_TO_HARNESS_CI), kindly go through [this](https://github.com/harness-community/ci-migration-guides/tree/main/CIRCLECI_TO_HARNESS_CI) guide.  
-![](https://33333.cdn.cke-cs.com/kSW7V9NHUXugvhoQeFaf/images/8950a8c152d7b6f986dc62d9a07942d34f24d956e3e994a0.png)  
-![](https://33333.cdn.cke-cs.com/kSW7V9NHUXugvhoQeFaf/images/7a07a6fe2b46eb45cc004032fdc1eb97cae1d8cea0574715.png)
+Before migrating from [CircleCI to Harness CI](https://github.com/harness-community/ci-migration-guides/tree/main/CIRCLECI_TO_HARNESS_CI), kindly go through [this](https://github.com/harness-community/ci-migration-guides/tree/main/CIRCLECI_TO_HARNESS_CI) guide. 
 
 ### Challenge in Sharing Data between Stages:
 
@@ -192,4 +190,3 @@ workflows:
           requires:
             - job2
 ```
-![](https://33333.cdn.cke-cs.com/kSW7V9NHUXugvhoQeFaf/images/372eb9028cba7b3e4a49d8f6a89edbff3d918fab6d9f58dc.png)
